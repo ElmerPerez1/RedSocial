@@ -1,11 +1,11 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const publicationController = require('../controlers/publication');
+const publicationController = require("../controllers/publication");
+const { auth } = require("../middlewares/auth");
 
-//Rutas de prueba
-router.get('/prueba-publication', publicationController.pruebaPublication);
+// Endpoints
+router.post("/publication", auth, publicationController.createPublication);
+router.get("/publications/:id", auth, publicationController.userPublications);
+router.get("/feed", auth, publicationController.feed);
 
-//exportar router
-console.log('[routers/publication] typeof router before export:', typeof router);
 module.exports = router;
-console.log('[routers/publication] export set. typeof module.exports:', typeof module.exports);

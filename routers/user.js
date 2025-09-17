@@ -1,9 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userController = require('../controlers/user');
+const userController = require("../controllers/user");
+const { auth } = require("../middlewares/auth");
 
-//Rutas de prueba
-router.get('/prueba-user', userController.pruebaUser);
+// Endpoints
+router.post("/register", userController.register);
+router.post("/login", userController.login);
+router.get("/profile/:id", auth, userController.profile);
+// Express 5 path-to-regexp can error on optional params. Define both routes explicitly.
+router.get("/users", auth, userController.list);
+router.get("/users/:page", auth, userController.list);
 
-//exportar router
 module.exports = router;

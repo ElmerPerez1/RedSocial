@@ -17,8 +17,34 @@ const port = 3900; //puerto de escucha
 //configurar cors o el middleware 
 app.use(cors());    
 //convertir los datos del body a objeto js
-app.use(express.json());
+app.use(express.json({ type: ["application/json", "application/*+json"] }));
+// fallback para requests con Content-Type text/* (ej. clientes mal configurados)
+app.use(express.text({ type: ["text/*"] }));
 app.use(express.urlencoded({ extended: true }));
+
+// logging de requests para diagnostico
+app.use((req, res, next) => {
+    const ct = req.headers['content-type'] || 'n/a';
+    const cl = req.headers['content-length'] || 'n/a';
+    console.log(`[REQ] ${req.method} ${req.originalUrl} CT=${ct} Len=${cl}`);
+    if (["POST","PUT","PATCH"].includes(req.method)) {
+        console.log('[BODY]', req.body);
+    }
+    next();
+});
+
+// Normalizar cuerpos enviados como texto intentando parsear JSON
+app.use((req, res, next) => {
+    if (typeof req.body === 'string') {
+        try {
+            const parsed = JSON.parse(req.body);
+            req.body = parsed;
+        } catch (e) {
+            // dejar como string si no es JSON válido
+        }
+    }
+    next();
+});
 
 //cargar configuracion de las rutas
 const userRoutes = require('./routers/user');

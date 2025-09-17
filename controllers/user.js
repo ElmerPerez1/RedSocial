@@ -1,6 +1,8 @@
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("../services/jwt");
+const fs = require('fs');
+const path = require('path');
 
 const register = async (req, res) => {
   try {
@@ -59,6 +61,19 @@ const profile = async (req, res) => {
   }
 };
 
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const { bio } = req.body || {};
+    if (typeof bio !== 'string') return res.status(400).send({ status: 'error', message: 'Bio inválida' });
+    const user = await User.findByIdAndUpdate(userId, { bio }, { new: true }).select('-password -__v');
+    if (!user) return res.status(404).send({ status: 'error', message: 'Usuario no encontrado' });
+    return res.status(200).send({ status: 'success', user });
+  } catch (err) {
+    return res.status(500).send({ status: 'error', message: 'Error al actualizar perfil' });
+  }
+};
+
 const list = async (req, res) => {
   try {
     let page = parseInt(req.params.page) || 1;
@@ -76,4 +91,47 @@ const list = async (req, res) => {
   }
 };
 
-module.exports = { register, login, profile, list };
+module.exports = { register, login, profile, list, updateProfile };
+// --- Avatar management ---
+const uploadAvatar = async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).send({ status: 'error', message: 'Archivo no recibido' });
+    const userId = req.user?.id;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).send({ status: 'error', message: 'Usuario no encontrado' });
+    // eliminar avatar anterior si no era el default
+    if (user.image && user.image !== 'default.png' && user.image.startsWith('/uploads/avatars/')) {
+      try {
+        const rel = user.image.replace(/^\//, '');
+        fs.unlinkSync(path.join(__dirname, '..', rel));
+      } catch(_) {}
+    }
+    user.image = `/uploads/avatars/${req.file.filename}`;
+    await user.save();
+    return res.status(200).send({ status: 'success', image: user.image });
+  } catch (err) {
+    return res.status(500).send({ status: 'error', message: 'Error al subir avatar' });
+  }
+};
+
+const deleteAvatar = async (req, res) => {
+  try {
+    const userId = req.user?.id;
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).send({ status: 'error', message: 'Usuario no encontrado' });
+    if (user.image && user.image !== 'default.png' && user.image.startsWith('/uploads/avatars/')) {
+      try {
+        const rel = user.image.replace(/^\//, '');
+        fs.unlinkSync(path.join(__dirname, '..', rel));
+      } catch(_) {}
+    }
+    user.image = 'default.png';
+    await user.save();
+    return res.status(200).send({ status: 'success', image: user.image });
+  } catch (err) {
+    return res.status(500).send({ status: 'error', message: 'Error al eliminar avatar' });
+  }
+};
+
+module.exports.uploadAvatar = uploadAvatar;
+module.exports.deleteAvatar = deleteAvatar;

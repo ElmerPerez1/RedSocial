@@ -2,6 +2,7 @@
 const conection = require('./Database/conection');
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
 
 //mensaje de bienvenida
 console.log('Bienvenido a mi red social');
@@ -56,6 +57,24 @@ console.log('DEBUG typeof publicationRoutes:', typeof publicationRoutes);
 app.use('/api', userRoutes);
 app.use('/api', followRoutes);
 app.use('/api', publicationRoutes); 
+
+// servir frontend estatico
+const path = require('path');
+app.use(express.static(path.join(__dirname, 'public')));
+// servir archivos subidos
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// asegurar carpetas de subida
+const uploadsRoot = path.join(__dirname, 'uploads');
+const publicationsDir = path.join(uploadsRoot, 'publications');
+const avatarsDir = path.join(uploadsRoot, 'avatars');
+try {
+    if (!fs.existsSync(uploadsRoot)) fs.mkdirSync(uploadsRoot);
+    if (!fs.existsSync(publicationsDir)) fs.mkdirSync(publicationsDir);
+    if (!fs.existsSync(avatarsDir)) fs.mkdirSync(avatarsDir);
+} catch (e) {
+    console.error('No se pudieron crear directorios de uploads:', e.message);
+}
 
 //ruta de prueba
 app.get('/ruta-prueba', (req, res) => {

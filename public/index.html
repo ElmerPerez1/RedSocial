@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Red Social</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>MarianoGram</h1>
+    <div id="userInfo" class="user-info hidden"></div>
+    <nav id="nav" class="hidden">
+      <button data-view="feed">Feed</button>
+      <button data-view="publicar">Publicar</button>
+      <button data-view="usuarios">Usuarios</button>
+      <button data-view="perfil">Perfil</button>
+      <button id="logoutBtn">Salir</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="authView">
+      <div class="card">
+        <h2>Iniciar sesión</h2>
+        <form id="loginForm">
+          <label>Email<input name="email" type="email" required /></label>
+          <label>Contraseña<input name="password" type="password" required /></label>
+          <button type="submit">Entrar</button>
+        </form>
+      </div>
+      <div class="card">
+        <h2>Registrarse</h2>
+        <form id="registerForm">
+          <label>Nombre<input name="name" required /></label>
+          <label>Apellido<input name="surname" /></label>
+          <label>Nick<input name="nick" required /></label>
+          <label>Email<input name="email" type="email" required /></label>
+          <label>Contraseña<input name="password" type="password" required /></label>
+          <button type="submit">Crear cuenta</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="feedView" class="hidden">
+      <h2>Feed</h2>
+      <div id="feedList" class="list"></div>
+    </section>
+
+    <section id="publishView" class="hidden">
+      <h2>Nueva publicación</h2>
+      <form id="publishForm">
+        <label>Texto
+          <textarea name="text" rows="3" required></textarea>
+        </label>
+        <label>Archivo (opcional)
+          <input name="file" type="file" accept="image/*,video/*" />
+        </label>
+        <button type="submit">Publicar</button>
+      </form>
+    </section>
+
+    <section id="usersView" class="hidden">
+      <h2>Usuarios</h2>
+      <div class="subnav">
+        <button id="btnLoadUsers">Todos</button>
+        <button id="btnShowFollowing">Siguiendo</button>
+        <button id="btnShowFollowers">Seguidores</button>
+      </div>
+      <div id="usersList" class="list"></div>
+      <div id="pager" class="pager"></div>
+      <div id="relations" class="card hidden">
+        <h3 id="relationsTitle"></h3>
+        <div id="relationsList" class="list"></div>
+      </div>
+      <div id="userPubs" class="card hidden">
+        <h3 id="userPubsTitle"></h3>
+        <div id="userPubsList" class="list"></div>
+      </div>
+    </section>
+
+    <section id="profileView" class="hidden">
+      <h2>Mi perfil</h2>
+      <div class="card">
+        <div style="display:flex; gap:16px; align-items:center;">
+          <img id="avatarImg" src="/uploads/avatars/default.png" alt="avatar" style="width:72px;height:72px;border-radius:50%;object-fit:cover;border:1px solid #1f2937;"/>
+          <div style="flex:1">
+            <div id="profileSummary">Cargando…</div>
+            <form id="avatarForm" style="margin-top:8px; display:flex; gap:8px; align-items:center;">
+              <input type="file" name="avatar" accept="image/*" />
+              <button type="submit">Actualizar foto</button>
+              <button id="removeAvatarBtn" type="button">Quitar foto</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Mis publicaciones</h3>
+        <div id="myPubsList" class="list"></div>
+      </div>
+      <div class="card">
+        <h3>Mi bio</h3>
+        <form id="bioForm">
+          <textarea name="bio" id="bioText" rows="3" placeholder="Cuéntanos sobre ti..." style="width:100%"></textarea>
+          <div style="margin-top:8px"><button type="submit">Guardar bio</button></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">Hecho por Elmer Perez 5090 22 3700</footer>
+
+  <script src="/app.js"></script>
+</body>
+</html>

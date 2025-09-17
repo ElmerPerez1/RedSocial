@@ -1,12 +1,15 @@
 const Publication = require("../models/publication");
 const Follow = require("../models/follow");
+const path = require('path');
 
+// Crea publicación, soporta tanto JSON (text + file:string) como multipart (req.file)
 const createPublication = async (req, res) => {
   try {
+    const filePath = req.file ? `/uploads/publications/${req.file.filename}` : (req.body.file || null);
     const publication = new Publication({
       user: req.user?.id,
       text: req.body.text,
-      file: req.body.file || null
+      file: filePath
     });
     await publication.save();
     return res.status(200).send({ status: "success", publication });

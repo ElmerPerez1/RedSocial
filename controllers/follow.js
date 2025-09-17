@@ -39,3 +39,4 @@ const following = async (req, res) => {
 };
 
 module.exports = { followUser, unfollowUser, followers, following };
+

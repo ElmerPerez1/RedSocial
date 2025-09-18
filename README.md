@@ -6,7 +6,7 @@ Aplicación tipo red social (backend + frontend estático) con:
 - Seguir / dejar de seguir usuarios
 - Contadores de seguidores y seguidos
 - Publicaciones con texto y archivo multimedia (imagen / video)
-- Feed de publicaciones de usuarios seguidos
+- Feed de publicaciones (seguidos + propias, fallback global si no sigues a nadie)
 - Listado de usuarios con avatar y métricas
 - Subida y eliminación de avatar (multer)
 - Subida de archivos en publicaciones (multer)
@@ -144,7 +144,7 @@ Publicaciones
 |--------|------|------|-------------|
 | POST | /publication | Sí | Crear (form-data: text, file?) |
 | GET | /publications/:id | Sí | Publicaciones de usuario |
-| GET | /feed/:page? | Sí | Feed (si implementado) |
+| GET | /feed | Sí | Feed (seguidos + propias o global si no sigues) |
 | DELETE | /publication/:id | Sí | Eliminar propia (si implementado) |
 
 Archivos estáticos:
@@ -300,7 +300,8 @@ Stack: Jest, Supertest, mongodb-memory-server.
 |----------|-------|----------|
 | 401 rutas | Falta token | Añadir Authorization |
 | Avatar no carga | Ruta mal | Verificar /uploads estático |
-| Feed vacío | No sigues | Seguir usuarios |
+| Feed vacío | Nadie ha publicado | Esperar o publicar algo |
+| Feed global mostrado | No sigues a nadie | Ve a Usuarios y sigue a otros |
 | Error subir archivo | Campo incorrecto | Usar 'avatar' o 'file' |
 | Mongo no conecta | URI | Revisar MONGODB_URI |
 

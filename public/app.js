@@ -121,19 +121,33 @@
     if (!token) return;
     try {
       const data = await api('/feed', { headers: headers() });
-      renderPublications(data.publications || []);
+      renderPublications(data.publications || [], data.mode);
     } catch(err){ alert('Feed: ' + err.message); }
   }
 
-  function renderPublications(list){
+  function renderPublications(list, mode){
     feedList.innerHTML = '';
-    if (!list.length){ feedList.innerHTML = '<div class="item">No hay publicaciones aún</div>'; return; }
+    if (mode === 'global_fallback') {
+      const info = document.createElement('div');
+      info.className = 'item';
+      info.style.background = 'rgba(255,255,255,0.05)';
+      info.innerHTML = '<strong>Feed global:</strong> Aún no sigues a nadie. Mostrando publicaciones recientes de todos. Ve a la sección Usuarios para seguir a otros.';
+      feedList.appendChild(info);
+    }
+    if (!list.length){
+      const empty = document.createElement('div');
+      empty.className = 'item';
+      empty.textContent = 'No hay publicaciones aún';
+      feedList.appendChild(empty);
+      return;
+    }
     list.forEach(p => {
       const div = document.createElement('div');
       div.className = 'item';
+      const isMine = currentUser && p.user && (p.user._id === currentUser.id || p.user.id === currentUser.id);
       const user = p.user && (p.user.nick || p.user.name) ? (p.user.nick || p.user.name) : 'anónimo';
       div.innerHTML = `
-        <div class="meta">${user} — ${new Date(p.created_at).toLocaleString()}</div>
+        <div class="meta">${user}${isMine ? ' (tú)' : ''} — ${new Date(p.created_at).toLocaleString()}</div>
         <div class="text">${escapeHtml(p.text)}</div>
         ${p.file ? renderFile(p.file) : ''}
       `;
